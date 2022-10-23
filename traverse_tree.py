@@ -51,9 +51,9 @@ class node(board):
         # elif draw, return 0
         # elif all nodes traversed return 0
         # self.print_position()
-        #print(id(self), flush=True)
+        # print(id(self), flush=True)
 
-        if self.check_result() == True:
+        if self.check_result() is True:
             self.tree_total = 1
             return
 
@@ -61,19 +61,20 @@ class node(board):
             for row in range(3):
                 for col in range(3):
                     if self.position[row][col] == EMPTY:
-                        next_node = node(copy.deepcopy(self.position),
-                                         NOUGHT if self.norc == CROSS else CROSS)
+                        next_node = node(copy.deepcopy(
+                            self.position), NOUGHT if self.norc == CROSS else CROSS)
                         next_node.position[row][col] = next_node.norc
                         next_node.traverse()
-                        self.move_values[row * col] = next_node.tree_total
+                        self.move_values[3 * row + col] = next_node.tree_total
                         self.tree_total += next_node.tree_total / 4
         # self.print_position()
-        #print(id(self), 'leaving traverse', flush=True)
+        # print(id(self), 'leaving traverse', flush=True)
 
     def make_move(self):
         self.traverse()
         max_value = max(self.move_values)
         max_index = self.move_values.index(max_value)
+        print(self.move_values)
         print(max_index)
 
 
@@ -106,7 +107,7 @@ def test():
     my_node = node(my_board.position, CROSS)
     # my_node.print_position()
 
-    #fill_row(my_board.position, 0, CROSS)
+    # fill_row(my_board.position, 0, CROSS)
     # my_node.print_position()
     print(my_node.check_result())
 
