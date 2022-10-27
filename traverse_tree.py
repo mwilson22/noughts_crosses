@@ -47,14 +47,17 @@ class node(board):
     def forced_win(self):
         pass
 
+    def clear_current_square(self):
+        self.position[self.square[0]][self.square[1]] = EMPTY
+
     def traverse(self):
         if self.check_result() is True:
             self.tree_total = 1
-            self.position[self.square[0]][self.square[1]] = EMPTY
+            self.clear_current_square()
             return
 
         if self.depth is MAX_DEPTH:
-            self.position[self.square[0]][self.square[1]] = EMPTY
+            self.clear_current_square()
             return
 
         if self.empty_squares_count != 0:
@@ -68,11 +71,16 @@ class node(board):
                         next_node.traverse()
                         self.move_values[3 * row + col] = next_node.tree_total
                         self.tree_total += next_node.tree_total / 4
+
+        # if self.depth == 9:
+            # self.print_position()
+            # print("depth reached")
+            # exit()
+        # print(id(self), 'leaving traverse', flush=True)
+
         # Set the square filled for this node back to empty
         if self.depth > 0:
-            self.position[self.square[0]][self.square[1]] = EMPTY
-        # self.print_position()
-        # print(id(self), 'leaving traverse', flush=True)
+            self.clear_current_square()
 
     def make_move(self):
         self.print_position()
@@ -109,8 +117,8 @@ def test():
             pos[2 - i].insert(i, letter)
 
     my_board = board()
-    my_board.position = [['X', 'O', 'X'], ['O', 'X', ' '], [' ', ' ', ' ']]
-    # my_board.position = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]
+    # my_board.position = [['X', 'O', 'X'], ['O', 'X', ' '], [' ', ' ', ' ']]
+    my_board.position = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]
     my_board.print_position()
 
     my_node = node(my_board.position, NOUGHT, [0, 1])
