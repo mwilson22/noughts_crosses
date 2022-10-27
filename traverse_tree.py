@@ -1,6 +1,6 @@
 from board import *
 
-MAX_DEPTH = 17
+MAX_DEPTH = 27
 
 
 class node(board):
@@ -54,6 +54,7 @@ class node(board):
             return
 
         if self.depth is MAX_DEPTH:
+            self.position[self.square[0]][self.square[1]] = EMPTY
             return
 
         if self.empty_squares_count != 0:
@@ -68,7 +69,8 @@ class node(board):
                         self.move_values[3 * row + col] = next_node.tree_total
                         self.tree_total += next_node.tree_total / 4
         # Set the square filled for this node back to empty
-        self.position[self.square[0]][self.square[1]] = EMPTY
+        if self.depth > 0:
+            self.position[self.square[0]][self.square[1]] = EMPTY
         # self.print_position()
         # print(id(self), 'leaving traverse', flush=True)
 
@@ -77,10 +79,11 @@ class node(board):
         self.traverse()
         max_value = max(self.move_values)
         max_index = self.move_values.index(max_value)
-        self.position[max_index // 3][max_index % 3] = 'T'
+        self.position[max_index // 3][max_index % 3] = 'M'
         self.print_position()
         print(self.move_values)
         print(max_index)
+        return max_index
 
 
 def test():
@@ -106,11 +109,11 @@ def test():
             pos[2 - i].insert(i, letter)
 
     my_board = board()
-    # my_board.position = [['X', 'O', 'X'], ['O', 'X', ' '], [' ', ' ', ' ']]
-    my_board.position = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]
+    my_board.position = [['X', 'O', 'X'], ['O', 'X', ' '], [' ', ' ', ' ']]
+    # my_board.position = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]
     my_board.print_position()
 
-    my_node = node(my_board.position, CROSS)
+    my_node = node(my_board.position, NOUGHT, [0, 1])
     # my_node.print_position()
 
     # fill_row(my_board.position, 0, CROSS)
