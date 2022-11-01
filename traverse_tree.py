@@ -6,9 +6,9 @@ MINIMAX = 10
 
 
 class node(board):
-    def __init__(self, position=None, player=EMPTY, square=[0, 0]):
+    def __init__(self, position=None, symbol=EMPTY, square=[0, 0]):
         super().__init__(position)
-        self.player = player    # node is either a nought or cross
+        self.symbol = symbol    # node is either a nought or cross
         self.square = square    # Move associated with this node
         self.depth = 0
         # Win-weighting for each child node
@@ -25,36 +25,36 @@ class node(board):
         return self.position.count(EMPTY)
 
     def opposite_symbol(self):
-        return NOUGHT if self.player == CROSS else CROSS
+        return NOUGHT if self.symbol == CROSS else CROSS
 
     def whose_move(self):
         if self.depth % 2 == 0:
-            return PLAYER
-        else:
             return OPPONENT
+        else:
+            return PLAYER
 
     def is_winner(self, who):
         """ Test for a win """
         if who is PLAYER:
-            player = self.player
+            symbol = self.symbol
         else:
-            player = self.opposite_symbol()
+            symbol = self.opposite_symbol()
 
         for row in range(3):
-            if all(square == player for square in self.position[row]):
+            if all(square == symbol for square in self.position[row]):
                 return True
 
         for col in range(3):
             coln = [self.position[i][col] for i in range(3)]
-            if all(square == player for square in coln):
+            if all(square == symbol for square in coln):
                 return True
 
         diag_1 = [self.position[i][i] for i in range(3)]
-        if all(square == player for square in diag_1):
+        if all(square == symbol for square in diag_1):
             return True
 
         diag_2 = [self.position[2 - i][i] for i in range(3)]
-        if all(square == player for square in diag_2):
+        if all(square == symbol for square in diag_2):
             return True
 
         return False
@@ -63,12 +63,19 @@ class node(board):
         self.position[self.square[0]][self.square[1]] = EMPTY
 
     def traverse(self):
+        # self.print_position()
+        # print("Depth: ", self.depth, " ", end="")
         if self.is_winner(self.whose_move()) is True:
-            if self.whose_move() == OPPONENT:
+            if self.whose_move() == PLAYER:
                 self.tree_total = MINIMAX - self.depth
+                # print("winner - player")
             else:
                 self.tree_total = self.depth - MINIMAX
-            self.clear_current_square()
+
+                if self.depth == 2:
+                    print("winner - opponent")
+                    self.print_position()
+                    print("d: ", self.depth, self.move_values)
             return
 
         if self.empty_squares_count != 0:
@@ -76,30 +83,42 @@ class node(board):
                 for col in range(3):
                     if self.position[row][col] == EMPTY:
                         next_node = node(
-                            self.position, self.player, [row, col])
-                        next_node.position[row][col] = self.player if self.whose_move(
+                            self.position, self.symbol, [row, col])
+                        next_node.position[row][col] = self.symbol if self.whose_move(
                         ) == OPPONENT else self.opposite_symbol()
                         next_node.depth = self.depth + 1
                         next_node.traverse()
-                        # self.print_position()
+
+                        self.position[row][col] = EMPTY
                         self.move_values[3 * row + col] = next_node.tree_total
-                        # print(self.move_values)
+
+                        if self.depth < 2:
+                            self.print_position()
+                            print("d: ", self.depth, self.move_values)
 
         if self.whose_move() == PLAYER:
-            self.tree_total = max(self.move_values)
-        else:
             self.tree_total = min(self.move_values)
+        else:
+            self.tree_total = max(self.move_values)
 
         # Set the square filled for this node back to empty
-        if self.depth > 0:
-            self.clear_current_square()
+        # if self.depth > 0:
+            # self.clear_current_square()
 
     def make_move(self):
-        self.print_position()
         self.traverse()
+
+        i = 0
+        while i < len(self.move_values):
+            if self.position[i // 3][i % 3] != EMPTY:
+                self.move_values[i] = -MINIMAX - 1
+            i += 1
+
         max_value = max(self.move_values)
         max_index = self.move_values.index(max_value)
-        self.position[max_index // 3][max_index % 3] = self.opposite_symbol()
+        self.position[max_index // 3][max_index % 3] = self.symbol
+        self.move_values = [0.0] * 9
+
         self.print_position()
         print(self.move_values)
         print(max_index)
@@ -114,7 +133,7 @@ def play():
     while True:
         my_board.print_position()
         move = int(input("Your move: [1->9]")) - 1
-        my_node.position[move // 3][move % 3] = 'O'
+        my_node.position[move // 3][move % 3] = 'X'
         my_node.make_move()
 
 
@@ -149,13 +168,13 @@ def test():
         ['X', 'O', 'O']
     ]
     """
-
+    """
     my_board.position = [
         ['X', 'O', 'X'],
-        ['O', 'O', 'X'],
+        ['O', 'O', ' '],
         [' ', ' ', ' ']
     ]
-
+    """
     """
     my_board.position = [
         [' ', ' ', ' '],
@@ -164,16 +183,14 @@ def test():
     ]
     """
 
-    my_board.print_position()
-
-    my_node = node(my_board.position, NOUGHT, [0, 1])
+    # my_node = node(my_board.position, NOUGHT, [0, 1])
     # my_node.print_position()
 
     # fill_row(my_board.position, 0, CROSS)
     # my_node.print_position()
     # print(my_node.is_winner())
 
-    my_node.make_move()
+    # my_node.make_move()
 
 
 """
