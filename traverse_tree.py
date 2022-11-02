@@ -1,15 +1,14 @@
 from board import *
 
-PLAYER = 0
-OPPONENT = 1
+COMPUTER = 0
+HUMAN = 1
 MINIMAX = 10
 
 
 class node(board):
-    def __init__(self, position=None, symbol=EMPTY, square=[0, 0]):
+    def __init__(self, position=None, symbol=EMPTY):
         super().__init__(position)
         self.symbol = symbol    # node is either a nought or cross
-        self.square = square    # Move associated with this node
         self.depth = 0
         # Win-weighting for each child node
         self.move_values = [0.0] * 9
@@ -22,20 +21,23 @@ class node(board):
         return super().print_position()
 
     def empty_squares_count(self):
-        return self.position.count(EMPTY)
+        empty_sqrs = 0
+        for row in self.position:
+            empty_sqrs += row.count(EMPTY)
+        return empty_sqrs
 
     def opposite_symbol(self):
         return NOUGHT if self.symbol == CROSS else CROSS
 
     def whose_move(self):
         if self.depth % 2 == 0:
-            return OPPONENT
+            return HUMAN
         else:
-            return PLAYER
+            return COMPUTER
 
     def is_winner(self, who):
         """ Test for a win """
-        if who is PLAYER:
+        if who is COMPUTER:
             symbol = self.symbol
         else:
             symbol = self.opposite_symbol()
@@ -59,20 +61,14 @@ class node(board):
 
         return False
 
-    def clear_current_square(self):
-        self.position[self.square[0]][self.square[1]] = EMPTY
-
     def traverse(self):
-        # self.print_position()
-        # print("Depth: ", self.depth, " ", end="")
         if self.is_winner(self.whose_move()) is True:
-            if self.whose_move() == PLAYER:
+            if self.whose_move() == COMPUTER:
                 self.tree_total = MINIMAX - self.depth
-                # print("winner - player")
             else:
                 self.tree_total = self.depth - MINIMAX
 
-                if self.depth == 2:
+                if self.depth == 3:
                     print("winner - opponent")
                     self.print_position()
                     print("d: ", self.depth, self.move_values)
@@ -83,31 +79,32 @@ class node(board):
                 for col in range(3):
                     if self.position[row][col] == EMPTY:
                         next_node = node(
-                            self.position, self.symbol, [row, col])
+                            self.position, self.symbol)
                         next_node.position[row][col] = self.symbol if self.whose_move(
-                        ) == OPPONENT else self.opposite_symbol()
+                        ) == HUMAN else self.opposite_symbol()
                         next_node.depth = self.depth + 1
+
+                        if row == 2 and col == 2:
+                            self.print_position()
+                            print("d: ", self.depth, self.move_values)
+
                         next_node.traverse()
 
                         self.position[row][col] = EMPTY
                         self.move_values[3 * row + col] = next_node.tree_total
 
-                        if self.depth < 2:
-                            self.print_position()
-                            print("d: ", self.depth, self.move_values)
-
-        if self.whose_move() == PLAYER:
-            self.tree_total = min(self.move_values)
+        values = list(filter(lambda x: x != 0, self.move_values))
+        if values == []:
+            self.tree_total = 0
+        elif self.whose_move() == COMPUTER:
+            self.tree_total = min(values)
         else:
-            self.tree_total = max(self.move_values)
-
-        # Set the square filled for this node back to empty
-        # if self.depth > 0:
-            # self.clear_current_square()
+            self.tree_total = max(values)
 
     def make_move(self):
         self.traverse()
 
+        # Empty squares only
         i = 0
         while i < len(self.move_values):
             if self.position[i // 3][i % 3] != EMPTY:
@@ -119,6 +116,11 @@ class node(board):
         self.position[max_index // 3][max_index % 3] = self.symbol
         self.move_values = [0.0] * 9
 
+        if self.is_winner(COMPUTER):
+            self.print_position()
+            print("Computer wins!")
+            exit()
+
         self.print_position()
         print(self.move_values)
         print(max_index)
@@ -128,12 +130,38 @@ class node(board):
 def play():
     my_board = board()
 
-    my_node = node(my_board.position, NOUGHT, [0, 1])
+    my_node = node(my_board.position, NOUGHT)
 
     while True:
         my_board.print_position()
-        move = int(input("Your move: [1->9]")) - 1
-        my_node.position[move // 3][move % 3] = 'X'
+
+        """
+        get string input
+        check it's a digit
+        convert to int
+        minus 1
+        check it's 1<9
+        check it's not an empty square
+
+        """
+        while True:
+            move_str = input("Your move: [1->9]")
+            if move_str.isdigit() == True:
+                move = int(move_str) - 1
+                if move in range(0, 9):
+                    if my_node.position[move // 3][move % 3] == EMPTY:
+                        my_node.position[move // 3][move % 3] = 'X'
+                        break
+
+        if my_node.is_winner(HUMAN):
+            my_node.print_position()
+            print("You win!")
+            exit()
+        elif my_node.empty_squares_count() == 0:
+            my_node.print_position()
+            print("Draw!")
+            exit()
+
         my_node.make_move()
 
 
@@ -182,15 +210,20 @@ def test():
         [' ', ' ', ' ']
     ]
     """
+    my_board.position = [
+        ['O', ' ', 'X'],
+        ['X', 'X', ' '],
+        ['O', ' ', ' ']
+    ]
 
-    # my_node = node(my_board.position, NOUGHT, [0, 1])
+    my_node = node(my_board.position, NOUGHT)
     # my_node.print_position()
 
     # fill_row(my_board.position, 0, CROSS)
     # my_node.print_position()
     # print(my_node.is_winner())
 
-    # my_node.make_move()
+    my_node.make_move()
 
 
 """
