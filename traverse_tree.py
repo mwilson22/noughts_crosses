@@ -6,19 +6,13 @@ MINIMAX = 10
 
 
 class node(board):
-    def __init__(self, position=None, symbol=EMPTY):
+    def __init__(self, symbol=EMPTY, position=None):
         super().__init__(position)
         self.symbol = symbol            # node is either a nought or cross
         self.opposite_symbol = NOUGHT if self.symbol == CROSS else CROSS
         self.depth = 0
         self.move_values = [0.0] * 9    # Win-weighting for each child node
         self.tree_total = 0             # Win-weighting for this node
-
-    def __str__(self):
-        self.print_position()
-
-    def print_position(self):
-        return super().print_position()
 
     def num_empty_squares(self):
         empty_sqrs = 0
@@ -81,7 +75,7 @@ class node(board):
             for row in range(3):
                 for col in range(3):
                     if self.position[row][col] == EMPTY:
-                        next_node = node(self.position, self.symbol)
+                        next_node = node(self.symbol, self.position)
                         if self.whose_move() == HUMAN:
                             next_node.position[row][col] = self.symbol
                         else:
@@ -115,22 +109,13 @@ class node(board):
 
 
 def play():
-    my_board = board()
+    # my_board = board()
 
-    my_node = node(my_board.position, NOUGHT)
+    my_node = node(NOUGHT)
 
     while True:
-        my_board.print_position()
+        my_node.print_position()
 
-        """
-        get string input
-        check it's a digit
-        convert to int
-        minus 1
-        check it's 1<9
-        check it's not an empty square
-
-        """
         while True:
             move_str = input("Your move: [1->9]")
             if move_str.isdigit() == True:
@@ -156,87 +141,5 @@ def play():
             exit()
 
 
-def test():
-    def clear_position(pos):
-        pos.clear()
-        return [[EMPTY for _ in range(3)] for _ in range(3)]
-
-    def fill_row(pos, row, letter=EMPTY): pos[row] = [letter] * 3
-
-    def fill_col(pos, col, letter=EMPTY):
-        for i in range(3):
-            pos[i].pop(col)
-            pos[i].insert(col, letter)
-
-    def fill_diag_1(pos, letter):
-        for i in range(3):
-            pos[i].pop(i)
-            pos[i].insert(i, letter)
-
-    def fill_diag_2(pos, letter):
-        for i in range(3):
-            pos[2 - i].pop(i)
-            pos[2 - i].insert(i, letter)
-
-    my_board = board()
-
-    """
-    my_board.position = [
-        ['O', ' ', 'X'],
-        ['X', ' ', ' '],
-        ['X', 'O', 'O']
-    ]
-    """
-    """
-    my_board.position = [
-        ['X', 'O', 'X'],
-        ['O', 'O', ' '],
-        [' ', ' ', ' ']
-    ]
-    """
-    """
-    my_board.position = [
-        [' ', ' ', ' '],
-        [' ', ' ', ' '],
-        [' ', ' ', ' ']
-    ]
-    """
-    my_board.position = [
-        ['O', ' ', 'X'],
-        ['X', 'X', ' '],
-        ['O', ' ', ' ']
-    ]
-
-    my_node = node(my_board.position, NOUGHT)
-    # my_node.print_position()
-
-    # fill_row(my_board.position, 0, CROSS)
-    # my_node.print_position()
-    # print(my_node.is_winner())
-
-    my_node.make_move()
-
-
-"""
-    fill_col(my_node.position, 2, CROSS)
-    my_node.print_position()
-    print(my_node.is_winner())
-
-    my_node.position = clear_position(my_node.position)
-    fill_diag_1(my_node.position, NOUGHT)
-    my_node.print_position()
-    print(my_node.is_winner())
-
-    my_node.position = clear_position(my_node.position)
-    fill_diag_2(my_node.position, NOUGHT)
-    my_node.print_position()
-    print(my_node.is_winner())
-
-    my_node.position = clear_position(my_node.position)
-    fill_col(my_node.position, 1, NOUGHT)
-    my_node.print_position()
-    print(my_node.is_winner())
-"""
-play()
-
-test()
+if __name__ == '__main__':
+    play()
