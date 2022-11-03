@@ -108,22 +108,25 @@ class node(board):
             exit()
 
 
-def play():
-    # my_board = board()
+def get_player_move(my_node):
+    while True:
+        move_str = input("Your move: [1->9]")
+        if move_str.isdigit() == True:
+            move = int(move_str) - 1
+            if move in range(0, 9):
+                if my_node.position[move // 3][move % 3] == EMPTY:
+                    my_node.position[move // 3][move %
+                                                3] = my_node.opposite_symbol
+                    break
 
+
+def play():
     my_node = node(NOUGHT)
 
     while True:
         my_node.print_position()
 
-        while True:
-            move_str = input("Your move: [1->9]")
-            if move_str.isdigit() == True:
-                move = int(move_str) - 1
-                if move in range(0, 9):
-                    if my_node.position[move // 3][move % 3] == EMPTY:
-                        my_node.position[move // 3][move % 3] = 'X'
-                        break
+        get_player_move(my_node)
 
         if my_node.is_winner(HUMAN):
             my_node.print_position()
