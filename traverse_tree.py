@@ -8,11 +8,11 @@ MINIMAX = 10
 class node(board):
     def __init__(self, position=None, symbol=EMPTY):
         super().__init__(position)
-        self.symbol = symbol    # node is either a nought or cross
+        self.symbol = symbol            # node is either a nought or cross
+        self.opposite_symbol = NOUGHT if self.symbol == CROSS else CROSS
         self.depth = 0
-        # Win-weighting for each child node
-        self.move_values = [0.0] * 9
-        self.tree_total = 0     # Win-weighting for this node
+        self.move_values = [0.0] * 9    # Win-weighting for each child node
+        self.tree_total = 0             # Win-weighting for this node
 
     def __str__(self):
         self.print_position()
@@ -20,14 +20,11 @@ class node(board):
     def print_position(self):
         return super().print_position()
 
-    def empty_squares_count(self):
+    def num_empty_squares(self):
         empty_sqrs = 0
         for row in self.position:
             empty_sqrs += row.count(EMPTY)
         return empty_sqrs
-
-    def opposite_symbol(self):
-        return NOUGHT if self.symbol == CROSS else CROSS
 
     def whose_move(self):
         if self.depth % 2 == 0:
@@ -35,12 +32,23 @@ class node(board):
         else:
             return COMPUTER
 
-    def is_winner(self, who):
+    def strongest_move(self):
+        # Select from empty squares only
+        i = 0
+        while i < len(self.move_values):
+            if self.position[i // 3][i % 3] != EMPTY:
+                self.move_values[i] = -MINIMAX - 1
+            i += 1
+
+        max_value = max(self.move_values)
+        return self.move_values.index(max_value)
+
+    def is_winner(self, player):
         """ Test for a win """
-        if who is COMPUTER:
+        if player is COMPUTER:
             symbol = self.symbol
         else:
-            symbol = self.opposite_symbol()
+            symbol = self.opposite_symbol
 
         for row in range(3):
             if all(square == symbol for square in self.position[row]):
@@ -69,15 +77,17 @@ class node(board):
                 self.tree_total = self.depth - MINIMAX
             return
 
-        if self.empty_squares_count != 0:
+        if self.num_empty_squares != 0:
             for row in range(3):
                 for col in range(3):
                     if self.position[row][col] == EMPTY:
-                        next_node = node(
-                            self.position, self.symbol)
-                        next_node.position[row][col] = self.symbol if self.whose_move(
-                        ) == HUMAN else self.opposite_symbol()
+                        next_node = node(self.position, self.symbol)
+                        if self.whose_move() == HUMAN:
+                            next_node.position[row][col] = self.symbol
+                        else:
+                            next_node.position[row][col] = self.opposite_symbol
                         next_node.depth = self.depth + 1
+
                         next_node.traverse()
 
                         self.position[row][col] = EMPTY
@@ -94,24 +104,14 @@ class node(board):
     def make_move(self):
         self.traverse()
 
-        # Select from empty squares only
-        i = 0
-        while i < len(self.move_values):
-            if self.position[i // 3][i % 3] != EMPTY:
-                self.move_values[i] = -MINIMAX - 1
-            i += 1
-
-        max_value = max(self.move_values)
-        max_index = self.move_values.index(max_value)
+        max_index = self.strongest_move()
         self.position[max_index // 3][max_index % 3] = self.symbol
-        self.move_values = [0.0] * 9
+        self.move_values = [0.0] * 9    # Clear the move_values
 
         if self.is_winner(COMPUTER):
             self.print_position()
             print("Computer wins!")
             exit()
-
-        return max_index
 
 
 def play():
@@ -144,13 +144,16 @@ def play():
             my_node.print_position()
             print("You win!")
             exit()
-        elif my_node.empty_squares_count() == 0:
+        elif my_node.num_empty_squares() == 0:
             my_node.print_position()
             print("Draw!")
             exit()
 
         my_node.make_move()
-        # my_node.print_position()
+        if my_node.is_winner(COMPUTER):
+            my_node.print_position()
+            print("Computer wins!")
+            exit()
 
 
 def test():
