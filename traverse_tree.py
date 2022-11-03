@@ -67,11 +67,6 @@ class node(board):
                 self.tree_total = MINIMAX - self.depth
             else:
                 self.tree_total = self.depth - MINIMAX
-
-                if self.depth == 3:
-                    print("winner - opponent")
-                    self.print_position()
-                    print("d: ", self.depth, self.move_values)
             return
 
         if self.empty_squares_count != 0:
@@ -83,11 +78,6 @@ class node(board):
                         next_node.position[row][col] = self.symbol if self.whose_move(
                         ) == HUMAN else self.opposite_symbol()
                         next_node.depth = self.depth + 1
-
-                        if row == 2 and col == 2:
-                            self.print_position()
-                            print("d: ", self.depth, self.move_values)
-
                         next_node.traverse()
 
                         self.position[row][col] = EMPTY
@@ -104,7 +94,7 @@ class node(board):
     def make_move(self):
         self.traverse()
 
-        # Empty squares only
+        # Select from empty squares only
         i = 0
         while i < len(self.move_values):
             if self.position[i // 3][i % 3] != EMPTY:
@@ -121,9 +111,6 @@ class node(board):
             print("Computer wins!")
             exit()
 
-        self.print_position()
-        print(self.move_values)
-        print(max_index)
         return max_index
 
 
@@ -163,6 +150,7 @@ def play():
             exit()
 
         my_node.make_move()
+        # my_node.print_position()
 
 
 def test():
