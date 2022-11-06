@@ -6,6 +6,11 @@ MINIMAX = 10
 
 
 class node(board):
+    """Main class for the game
+
+    On init, symbol defines if computer is O or X
+    """
+
     def __init__(self, symbol=EMPTY, position=None):
         super().__init__(position)
         self.symbol = symbol            # node is either a nought or cross
@@ -61,7 +66,10 @@ class node(board):
         return False
 
     def traverse(self):
-        # If a win, record minimax and return
+        """ Traverses the entire game tree depth first (DFS)
+        """
+
+        # If a win, records the minimax value and returns
         if self.is_winner(self.whose_move()) is True:
             if self.whose_move() == COMPUTER:
                 self.tree_total = MINIMAX - self.depth
@@ -86,7 +94,7 @@ class node(board):
                         self.position[row][col] = EMPTY
                         self.move_values[3 * row + col] = next_node.tree_total
 
-        # All moves traversed. Run minimax algo
+        # All moves traversed - run minimax algo
         values = list(filter(lambda x: x != 0, self.move_values))
         if values == []:
             self.tree_total = 0

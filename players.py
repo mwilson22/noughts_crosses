@@ -3,6 +3,12 @@ import random
 
 
 class player():
+    """Parent class of all players
+
+    Requires a game_node
+    Provides functions for testing for wins
+    """
+
     def __init__(self, game_node):
         self.game_node = game_node
 
@@ -23,6 +29,11 @@ class player():
 
 
 class human_player(player):
+    """Takes input from the user
+
+    Checks input is 0-9 and on an empty square
+    """
+
     def test_for_win(self):
         super().test_for_win(HUMAN)
 
@@ -40,6 +51,8 @@ class human_player(player):
 
 
 class computer_player(player):
+    """Parent class of all computer players"""
+
     def test_for_win(self):
         super().test_for_win(COMPUTER)
 
@@ -47,11 +60,17 @@ class computer_player(player):
         while True:
             square = [random.randint(0, 2), random.randint(0, 2)]
             if self.game_node.position[square[0]][square[1]] == EMPTY:
-                self.game_node.position[square[0]][square[1]] = NOUGHT
+                self.game_node.position[square[0]][square[1]] = self.game_node.symbol
                 break
 
 
 class minimax_player(computer_player):
+    """The unbeatable player
+
+    Uses the minimax algorithm to assess all possible moves
+    Uses the node class to traverse the tree
+    """
+
     def make_move(self):
         self.game_node.traverse()
 
@@ -63,10 +82,8 @@ class minimax_player(computer_player):
 
 
 class random_player(computer_player):
+    """Makes random moves"""
+
     def make_move(self):
         self.random_move()
         self.test_and_display()
-
-
-class ml_player(computer_player):
-    pass
