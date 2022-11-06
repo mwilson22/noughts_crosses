@@ -40,12 +40,15 @@ class human_player(player):
 
 
 class computer_player(player):
-    def __init__(self, game_node):
-        super().__init__(game_node)
-        self.game_node = game_node
-
     def test_for_win(self):
         super().test_for_win(COMPUTER)
+
+    def random_move(self):
+        while True:
+            square = [random.randint(0, 2), random.randint(0, 2)]
+            if self.game_node.position[square[0]][square[1]] == EMPTY:
+                self.game_node.position[square[0]][square[1]] = NOUGHT
+                break
 
 
 class minimax_player(computer_player):
@@ -61,14 +64,7 @@ class minimax_player(computer_player):
 
 class random_player(computer_player):
     def make_move(self):
-        if self.game_node.num_empty_squares == 0:
-            exit()
-
-        while True:
-            square = [random.randint(0, 2), random.randint(0, 2)]
-            if self.game_node.position[square[0]][square[1]] == EMPTY:
-                self.game_node.position[square[0]][square[1]] = 'O'
-                break
+        self.random_move()
         self.test_and_display()
 
 
