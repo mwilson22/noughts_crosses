@@ -20,6 +20,9 @@ class node(board):
             empty_sqrs += row.count(EMPTY)
         return empty_sqrs
 
+    def reset_node(self):
+        self.move_values = [0.0] * 9    # Clear the move_values
+
     def whose_move(self):
         if self.depth % 2 == 0:
             return HUMAN
@@ -94,55 +97,3 @@ class node(board):
             self.tree_total = min(values)
         else:
             self.tree_total = max(values)
-
-    def make_move(self):
-        self.traverse()
-
-        max_index = self.strongest_move()
-        self.position[max_index // 3][max_index % 3] = self.symbol
-        self.move_values = [0.0] * 9    # Clear the move_values
-
-        if self.is_winner(COMPUTER):
-            self.print_position()
-            print("Computer wins!")
-            exit()
-
-
-def get_player_move(my_node):
-    while True:
-        move_str = input("Your move: [1->9]")
-        if move_str.isdigit() == True:
-            move = int(move_str) - 1
-            if move in range(0, 9):
-                if my_node.position[move // 3][move % 3] == EMPTY:
-                    my_node.position[move // 3][move %
-                                                3] = my_node.opposite_symbol
-                    break
-
-
-def play():
-    my_node = node(NOUGHT)
-
-    while True:
-        my_node.print_position()
-
-        get_player_move(my_node)
-
-        if my_node.is_winner(HUMAN):
-            my_node.print_position()
-            print("You win!")
-            exit()
-        elif my_node.num_empty_squares() == 0:
-            my_node.print_position()
-            print("Draw!")
-            exit()
-
-        my_node.make_move()
-        if my_node.is_winner(COMPUTER):
-            my_node.print_position()
-            print("Computer wins!")
-            exit()
-
-
-if __name__ == '__main__':
-    play()
