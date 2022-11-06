@@ -41,19 +41,13 @@ class node(board):
         return self.move_values.index(max_value)
 
     def is_winner(self, player):
-        """ Test for a win """
-        if player is COMPUTER:
-            symbol = self.symbol
-        else:
-            symbol = self.opposite_symbol
+        symbol = self.symbol if player is COMPUTER else self.opposite_symbol
 
-        for row in range(3):
-            if all(square == symbol for square in self.position[row]):
-                return True
-
-        for col in range(3):
-            coln = [self.position[i][col] for i in range(3)]
-            if all(square == symbol for square in coln):
+        # Check rows and cols
+        for row_col in range(3):
+            coln = [self.position[i][row_col] for i in range(3)]
+            if all(square == symbol for square in coln) or \
+               all(square == symbol for square in self.position[row_col]):
                 return True
 
         diag_1 = [self.position[i][i] for i in range(3)]
@@ -67,6 +61,7 @@ class node(board):
         return False
 
     def traverse(self):
+        # If a win, record minimax and return
         if self.is_winner(self.whose_move()) is True:
             if self.whose_move() == COMPUTER:
                 self.tree_total = MINIMAX - self.depth
@@ -74,6 +69,7 @@ class node(board):
                 self.tree_total = self.depth - MINIMAX
             return
 
+        # Traverse the whole tree and record each result
         if self.num_empty_squares != 0:
             for row in range(3):
                 for col in range(3):
@@ -90,6 +86,7 @@ class node(board):
                         self.position[row][col] = EMPTY
                         self.move_values[3 * row + col] = next_node.tree_total
 
+        # All moves traversed. Run minimax algo
         values = list(filter(lambda x: x != 0, self.move_values))
         if values == []:
             self.tree_total = 0
