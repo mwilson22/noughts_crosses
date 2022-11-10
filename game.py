@@ -18,15 +18,15 @@ def comp_vs_comp():
     """
 
     game_node = node(NOUGHT)
-    computer1 = minimax_player(game_node)
-    computer1.random_move()
+    computer = minimax_player(game_node)
+    computer.random_move()
 
     while True:
-        computer1.make_move()
-
         tmp = game_node.symbol
         game_node.symbol = game_node.opposite_symbol
         game_node.opposite_symbol = tmp
+
+        computer.make_move()
 
 
 def play():
@@ -68,7 +68,7 @@ def play():
 
 
 if __name__ == '__main__':
-    computer_v_computer = False
+    computer_v_computer = True
 
     if computer_v_computer:
         comp_vs_comp()
