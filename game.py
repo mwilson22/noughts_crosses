@@ -30,12 +30,8 @@ def comp_vs_comp():
 
 
 def get_user_choices():
-    while True:
-        symbol = input('\nPlay X or O? ["'"X"'" / "'"O"'"]')
-        if symbol in [NOUGHT, CROSS, NOUGHT.lower(), CROSS.lower()]:
-            break
-        else:
-            print(' / '.join([NOUGHT, NOUGHT.lower(), CROSS, CROSS.lower()]), ' only please ')
+    computer_symbol = NOUGHT
+    comp_plays_first = False
 
     while True:
         str_difficulty = input('\nChoose difficulty: [0..5 where 0=random 5=unbeatable] ')
@@ -49,17 +45,14 @@ def get_user_choices():
         else:
             print('0..5 only please')
 
-    if symbol in [NOUGHT, NOUGHT.lower()]:
-        computer_symbol = CROSS
-    else:
-        computer_symbol = NOUGHT
-
-    return computer_symbol, difficulty
+    return computer_symbol, difficulty, comp_plays_first
 
 
 def play():
-    comp_plays_first = False
-    computer_symbol, difficulty = get_user_choices()
+    """Human vs computer
+    """
+
+    computer_symbol, difficulty, comp_plays_first = get_user_choices()
 
     game_node = Node(computer_symbol)
     comp_minimax = MinimaxPlayer(game_node)
