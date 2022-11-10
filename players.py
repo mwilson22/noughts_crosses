@@ -2,7 +2,7 @@ from traverse_tree import *
 import random
 
 
-class player():
+class Player():
     """Parent class of all players
 
     Requires a game_node
@@ -18,17 +18,18 @@ class player():
             print(res)
             exit()
 
-        if self.game_node.num_empty_squares() == 0:
-            show_res_and_exit("Draw!")
-        elif self.game_node.is_winner(player):
+        if self.game_node.is_winner(player):
             show_res_and_exit("You win!" if player == HUMAN else "Computer wins!")
+        else:
+            if self.game_node.num_empty_squares() == 0:
+                show_res_and_exit("Draw!")
 
     def test_and_display(self):
         self.test_for_win()
         self.game_node.print_position()
 
 
-class human_player(player):
+class HumanPlayer(Player):
     """Takes input from the user
 
     Checks input is 0-9 and on an empty square
@@ -50,7 +51,7 @@ class human_player(player):
         self.test_and_display()
 
 
-class computer_player(player):
+class ComputerPlayer(Player):
     """Parent class of all computer players"""
 
     def test_for_win(self):
@@ -64,7 +65,7 @@ class computer_player(player):
                 break
 
 
-class minimax_player(computer_player):
+class MinimaxPlayer(ComputerPlayer):
     """The unbeatable player
 
     Uses the minimax algorithm to assess all possible moves
@@ -81,7 +82,7 @@ class minimax_player(computer_player):
         self.game_node.reset_node()
 
 
-class random_player(computer_player):
+class RandomPlayer(ComputerPlayer):
     """Makes random moves"""
 
     def make_move(self):

@@ -3,7 +3,7 @@ CROSS = 'X'
 EMPTY = ' '
 
 
-class board():
+class Board():
     def __init__(self, position=None):
         if position is None:
             self.position = self.make_empty_position()

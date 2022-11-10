@@ -5,7 +5,7 @@ HUMAN = 1
 MINIMAX = 10
 
 
-class node(board):
+class Node(Board):
     """Main class for the game
 
     On init, symbol defines if computer is O or X
@@ -82,7 +82,7 @@ class node(board):
             for row in range(3):
                 for col in range(3):
                     if self.position[row][col] == EMPTY:
-                        next_node = node(self.symbol, self.position)
+                        next_node = Node(self.symbol, self.position)
                         if self.whose_move() == HUMAN:
                             next_node.position[row][col] = self.symbol
                         else:

@@ -17,8 +17,8 @@ def comp_vs_comp():
     Start with a random move to give a different game each time
     """
 
-    game_node = node(NOUGHT)
-    computer = minimax_player(game_node)
+    game_node = Node(NOUGHT)
+    computer = MinimaxPlayer(game_node)
     computer.random_move()
 
     while True:
@@ -29,10 +29,13 @@ def comp_vs_comp():
         computer.make_move()
 
 
-def play():
-    computer_symbol = NOUGHT
-    comp_plays_first = False
-    difficulty = 3  # 0->5 0=random 5=unbeatable
+def get_user_choices():
+    while True:
+        symbol = input('\nPlay X or O? ["'"X"'" / "'"O"'"]')
+        if symbol in [NOUGHT, CROSS, NOUGHT.lower(), CROSS.lower()]:
+            break
+        else:
+            print(' / '.join([NOUGHT, NOUGHT.lower(), CROSS, CROSS.lower()]), ' only please ')
 
     while True:
         str_difficulty = input('\nChoose difficulty: [0..5 where 0=random 5=unbeatable] ')
@@ -46,17 +49,26 @@ def play():
         else:
             print('0..5 only please')
 
-    game_node = node(computer_symbol)
+    if symbol in [NOUGHT, NOUGHT.lower()]:
+        computer_symbol = CROSS
+    else:
+        computer_symbol = NOUGHT
 
-    comp_minimax = minimax_player(game_node)
-    comp_random = random_player(game_node)
+    return computer_symbol, difficulty
 
-    human = human_player(game_node)
 
-    game_node.print_position()
+def play():
+    comp_plays_first = False
+    computer_symbol, difficulty = get_user_choices()
+
+    game_node = Node(computer_symbol)
+    comp_minimax = MinimaxPlayer(game_node)
+    comp_random = RandomPlayer(game_node)
+    human = HumanPlayer(game_node)
 
     if comp_plays_first:
         comp_random.make_move()
+    else:
         game_node.print_position()
 
     while True:
@@ -68,7 +80,7 @@ def play():
 
 
 if __name__ == '__main__':
-    computer_v_computer = True
+    computer_v_computer = False
 
     if computer_v_computer:
         comp_vs_comp()
